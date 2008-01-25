@@ -124,8 +124,11 @@ public class ZipCryptReader {
 		return totlen;
 	}
 
+	private static final String UNPACK_PROPERTY_NAME = "unpack";
+	
 	public static void main(String[] args) {
-		boolean unpack = Boolean.getBoolean("unpack");
+		boolean unpack = (System.getProperty(UNPACK_PROPERTY_NAME) == null) ?
+				true : Boolean.getBoolean(UNPACK_PROPERTY_NAME);
 
 		try {
 			File[] files = null;
