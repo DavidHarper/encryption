@@ -95,7 +95,7 @@ public class FileScrambler {
 
 		params.init(ivps);
 
-		SecretKeySpec keySpec = getKeySpecFromPassphrase("Enter passphrase",
+		SecretKeySpec keySpec = getKeySpecFromPassphrase("Enter passphrase>",
 				true);
 
 		cipher.init(Cipher.ENCRYPT_MODE, keySpec, params);
