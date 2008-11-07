@@ -86,8 +86,13 @@ public class FileScrambler {
 			InvalidAlgorithmParameterException, PasswordMismatchException {
 		BufferedOutputStream bos = new BufferedOutputStream(
 				new FileOutputStream(file));
-
-		byte[] IV = createRandomIV();
+		byte[] digest = getDigestFromPassphrase("Enter passphrase>",
+				true);
+		
+		byte[] IV = new byte[16];
+		
+		for (int i = 0; i < 16; i++)
+			IV[i] = digest[i+16];
 
 		IvParameterSpec ivps = new IvParameterSpec(IV);
 
@@ -95,8 +100,7 @@ public class FileScrambler {
 
 		params.init(ivps);
 
-		SecretKeySpec keySpec = getKeySpecFromPassphrase("Enter passphrase>",
-				true);
+		SecretKeySpec keySpec = getKeySpecFromDigest(digest);
 
 		cipher.init(Cipher.ENCRYPT_MODE, keySpec, params);
 
@@ -122,7 +126,7 @@ public class FileScrambler {
 		return IV;
 	}
 
-	private SecretKeySpec getKeySpecFromPassphrase(String prompt,
+	private byte[] getDigestFromPassphrase(String prompt,
 			boolean askTwice) throws PasswordMismatchException {
 		char[] pwchars = System.console().readPassword(prompt, (Object[]) null);
 
@@ -143,8 +147,13 @@ public class FileScrambler {
 
 		byte[] passphrase = pp.getBytes();
 
-		byte[] digest = digester.digest(passphrase);
-
+		return digester.digest(passphrase);
+	}
+	
+	private SecretKeySpec getKeySpecFromDigest(byte[] digest) {
+		if (digest == null || digest.length < 16)
+			throw new IllegalArgumentException("Digest is null or too short");
+		
 		byte[] key = new byte[16];
 
 		for (int i = 0; i < 16; i++)
@@ -182,9 +191,11 @@ public class FileScrambler {
 		byte[] IV = new byte[16];
 
 		bis.read(IV, 0, 16);
-
-		SecretKeySpec keySpec = getKeySpecFromPassphrase("Enter passphrase",
+		
+		byte[] digest = getDigestFromPassphrase("Enter passphrase",
 				false);
+
+		SecretKeySpec keySpec = getKeySpecFromDigest(digest);
 
 		IvParameterSpec ivps = new IvParameterSpec(IV);
 
