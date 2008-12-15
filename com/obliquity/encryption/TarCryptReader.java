@@ -23,7 +23,7 @@ public class TarCryptReader {
 		digester = MessageDigest.getInstance("SHA-256");
 	}
 
-	public void decrypt(File[] infiles, byte[] passphrase, boolean unpack) throws IOException,
+	public void decrypt(File[] infiles, byte[] passphrase, File destdir) throws IOException,
 			NoSuchAlgorithmException, InvalidParameterSpecException,
 			InvalidKeyException, InvalidAlgorithmParameterException {
 		
@@ -61,7 +61,7 @@ public class TarCryptReader {
 		TarEntry entry = null;
 		
 		while ((entry = tis.getNextEntry()) != null)
-			processTarEntry(entry, tis, unpack);
+			processTarEntry(entry, tis, destdir);
 
 		tis.close();
 	}
@@ -77,8 +77,8 @@ public class TarCryptReader {
 		return new BufferedInputStream(sis);
 	}
 
-	private void processTarEntry(TarEntry tarentry, InputStream is, boolean unpack)
-			throws IOException {
+	private void processTarEntry(TarEntry tarentry, InputStream is, File destdir)
+			throws IOException {		
 		String entryname = tarentry.getName();
 		long size = tarentry.getSize();
 		Date modified = tarentry.getModTime();
@@ -87,12 +87,12 @@ public class TarCryptReader {
 				(tarentry.isDirectory() ? "directory" : size + " bytes") +
 				", last modified " + modified + ")");
 		
-		if (unpack) {
+		if (destdir != null) {
 			if (tarentry.isDirectory()) {
-				File dir = new File(entryname);
+				File dir = new File(destdir, entryname);
 				dir.mkdirs();
 			} else {
-				File outfile = new File(entryname);
+				File outfile = new File(destdir, entryname);
 			
 				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outfile));
 			
@@ -100,7 +100,7 @@ public class TarCryptReader {
 			
 				bos.close();
 
-				System.out.println("\t" + bytesread + " bytes read from stream.");
+				System.out.println("\t" + bytesread + " bytes written to " + outfile);
 			}
 		}
 	}
@@ -129,6 +129,7 @@ public class TarCryptReader {
 
 		try {
 			File[] files = null;
+			File destdir = null;
 
 			if (args.length > 0) {
 				files = new File[args.length];
@@ -153,6 +154,24 @@ public class TarCryptReader {
 			if (files == null || files.length == 0)
 				System.exit(0);
 			
+			if (unpack) {
+				JFileChooser chooser = new JFileChooser();
+			
+				chooser.setMultiSelectionEnabled(false);
+			
+				File cwd = new File(System.getProperty("user.dir"));
+				chooser.setCurrentDirectory(cwd);
+			
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+				int returnVal = chooser.showOpenDialog(null);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION)
+					destdir = chooser.getSelectedFile();
+				else
+					destdir = null;	
+			}
+			
 			TarCryptReader decrypter = new TarCryptReader();
 
 			String s = (String) JOptionPane.showInputDialog(null,
@@ -162,7 +181,7 @@ public class TarCryptReader {
 
 			byte[] passphrase = s.getBytes();
 				
-			decrypter.decrypt(files, passphrase, unpack);
+			decrypter.decrypt(files, passphrase, destdir);
 
 			System.exit(0);
 		} catch (Exception e) {
