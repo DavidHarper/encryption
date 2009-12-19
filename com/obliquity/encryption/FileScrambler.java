@@ -109,23 +109,6 @@ public class FileScrambler {
 		return new CipherOutputStream(bos, cipher);
 	}
 
-	private byte[] createRandomIV() {
-		Random random = new Random();
-
-		byte[] buffer = new byte[1024];
-
-		random.nextBytes(buffer);
-
-		byte[] digest = digester.digest(buffer);
-
-		byte[] IV = new byte[16];
-
-		for (int i = 0; i < 16; i++)
-			IV[i] = digest[i];
-
-		return IV;
-	}
-
 	private byte[] getDigestFromPassphrase(String prompt,
 			boolean askTwice) throws PasswordMismatchException {
 		char[] pwchars = System.console().readPassword(prompt, (Object[]) null);
