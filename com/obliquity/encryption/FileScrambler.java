@@ -7,7 +7,6 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidParameterSpecException;
-import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
