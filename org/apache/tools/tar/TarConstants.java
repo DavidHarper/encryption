@@ -89,6 +89,11 @@ public interface TarConstants {
      * The length of the devices field in a header buffer.
      */
     int    DEVLEN = 8;
+    
+    /**
+     * The length of the prefix field in a header buffer. 
+     */
+    int    PREFIXLEN = 155;
 
     /**
      * LF_ constants represent the "link flag" of an entry, or more commonly,

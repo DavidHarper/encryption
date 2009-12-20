@@ -115,6 +115,9 @@ public class TarEntry implements TarConstants {
 
     /** The entry's minor device number. */
     private int devMinor;
+    
+    /** The entry's prefix */
+    private StringBuffer prefix;
 
     /** The entry's file reference */
     private File file;
@@ -322,7 +325,7 @@ public class TarEntry implements TarConstants {
      * @return This entry's name.
      */
     public String getName() {
-        return this.name.toString();
+        return prefix == null ? this.name.toString() : this.prefix.toString() + this.name.toString();
     }
 
     /**
@@ -634,5 +637,7 @@ public class TarEntry implements TarConstants {
         this.devMajor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
         offset += DEVLEN;
         this.devMinor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
+        offset += DEVLEN;
+        this.prefix = TarUtils.parseName(header, offset, PREFIXLEN);
     }
 }

@@ -90,7 +90,7 @@ public class TarUtils {
             result.append((char) header[i]);
         }
 
-        return result;
+        return result.length() > 0 ? result : null;
     }
 
     /**
