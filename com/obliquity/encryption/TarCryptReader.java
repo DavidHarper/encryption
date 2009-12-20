@@ -94,13 +94,23 @@ public class TarCryptReader {
 			} else {
 				File outfile = new File(destdir, entryname);
 			
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outfile));
+				BufferedOutputStream bos = null;
+				
+				try {
+					bos = new BufferedOutputStream(new FileOutputStream(outfile));
+				}
+				catch (FileNotFoundException fnfe) {
+					System.err.println("Failed to open " + outfile.getAbsolutePath() + " for writing : " +
+							fnfe.getMessage());
+				}
 			
 				int bytesread = readFromStream(is,bos);
 			
-				bos.close();
+				if (bos != null) {
+					bos.close();
 
-				System.out.println("\t" + bytesread + " bytes written to " + outfile);
+					System.out.println("\t" + bytesread + " bytes written to " + outfile);
+				}
 			}
 		}
 	}
