@@ -140,7 +140,9 @@ public class EncryptedFileReader {
 		AbstractArchiveHandler handler = null;
 		
 		if (format.equalsIgnoreCase("tar"))
-			handler = new TarArchiveHandler();
+			handler = new TarArchiveHandler(false);
+		else if (format.equalsIgnoreCase("tgz"))
+			handler = new TarArchiveHandler(true);
 		else if (format.equalsIgnoreCase("zip"))
 			handler = new ZipArchiveHandler();
 		else {

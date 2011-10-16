@@ -10,11 +10,17 @@ import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
 
 public class TarArchiveHandler extends AbstractArchiveHandler {
+	private boolean compressed;
+	
+	public TarArchiveHandler(boolean compressed) {
+		this.compressed = compressed;
+	}
+	
 	public void processArchive(InputStream is, EncryptedFileReader reader,
 			File destdir) throws IOException {
-		GZIPInputStream gis = new GZIPInputStream(is);
+		InputStream is2 = compressed ? new GZIPInputStream(is) : is;
 
-		TarInputStream tis = new TarInputStream(gis);
+		TarInputStream tis = new TarInputStream(is2);
 
 		TarEntry entry = null;
 		
