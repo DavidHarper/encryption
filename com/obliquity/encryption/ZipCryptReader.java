@@ -38,10 +38,16 @@ public class ZipCryptReader {
 
 		byte[] digest = digester.digest(passphrase);
 
-		byte[] key = new byte[16];
+		byte[] key = null;
+		
+		if (Boolean.getBoolean("AES256")) {
+			key = digest;
+		} else {
+			key = new byte[16];
 
-		for (int i = 0; i < 16; i++)
-			key[i] = digest[i];
+			for (int i = 0; i < 16; i++)
+				key[i] = digest[i];
+		}
 
 		IvParameterSpec ivps = new IvParameterSpec(IV);
 
