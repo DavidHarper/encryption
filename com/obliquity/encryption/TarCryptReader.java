@@ -54,9 +54,9 @@ public class TarCryptReader {
 
 		CipherInputStream cis = new CipherInputStream(bis, cipher);
 		
-		//GZIPInputStream gis = new GZIPInputStream(cis);
+		GZIPInputStream gis = new GZIPInputStream(cis);
 
-		TarInputStream tis = new TarInputStream(cis);
+		TarInputStream tis = new TarInputStream(gis);
 
 		TarEntry entry = null;
 		
