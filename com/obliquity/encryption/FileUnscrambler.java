@@ -29,7 +29,7 @@ public class FileUnscrambler {
 			InvalidKeyException, InvalidAlgorithmParameterException {
 		long totalBytes = calculateTotalBytes(infiles);
 		
-		FileOutputStream fos = new FileOutputStream(destfile);
+		OutputStream fos = destfile != null ? new FileOutputStream(destfile) : System.out;
 		
 		BufferedInputStream bis = createInputStream(infiles);
 
